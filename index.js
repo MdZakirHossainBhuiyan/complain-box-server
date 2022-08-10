@@ -26,6 +26,7 @@ client.connect(err => {
   const usersCollection = client.db("complainBox").collection("users");
   const complainCollection = client.db("complainBox").collection("complains");
   const contactCollection = client.db("complainBox").collection("contact");
+  const emergencyContactCollection = client.db("complainBox").collection("emergencyContact");
   
   app.post('/addUser', (req, res) => {
     const userName = req.body.userName;
@@ -71,6 +72,19 @@ client.connect(err => {
         res.send(result.insertedCount > 0);
       })
   })
+
+  app.post('/addEmergencyContact', (req, res) => {
+    const location = req.body.location;
+    const police = req.body.police;
+    const fire = req.body.fire;
+    const hospital = req.body.hospital;
+
+    emergencyContactCollection.insertOne({location, police, fire, hospital})
+      .then(result => {
+        res.send(result.insertedCount > 0);
+      })
+  })
+
 
   app.post('/addContact', (req, res) => {
     const userName = req.body.userName;
@@ -122,6 +136,13 @@ client.connect(err => {
     })
   })
 
+  app.get('/emergencyContact', (req, res) => {
+    emergencyContactCollection.find({})
+    .toArray((err, documents) => {
+      res.send(documents);
+    })
+  })
+
   app.get('/comlains', (req, res) => {
     complainCollection.find({})
     .toArray((err, documents) => {
@@ -133,6 +154,40 @@ client.connect(err => {
     const id = req.params.id;
     const query = {_id: ObjectIdC(id)};
     const result = usersCollection.deleteOne(query);
+    res.json(result);
+  })
+
+  app.delete('/complainDelete/:id', (req, res) => {
+    const id = req.params.id;
+    const query = {_id: ObjectIdC(id)};
+    const result = complainCollection.deleteOne(query);
+    res.json(result);
+  })
+
+  app.put('/updateComplainStatus/:id', (req, res) => {
+    const id = req.params.id;
+    const filter = {_id: ObjectIdC(id)};
+    const options = {upsert: true}
+    const updateDoc = {
+        $set: {
+            status: 'Accepted'
+        },
+    };
+    const result = complainCollection.updateOne(filter, updateDoc, options);
+    res.json(result);
+  })
+
+  app.put('/updateComplain/:id', (req, res) => {
+    const id = req.params.id;
+    const filter = {_id: ObjectIdC(id)};
+    const options = {upsert: true}
+    const updateDoc = {
+        $set: {
+            status: 'Accepted',
+            seeComplain: req.body.status
+        },
+    };
+    const result = complainCollection.updateOne(filter, updateDoc, options);
     res.json(result);
   })
 
