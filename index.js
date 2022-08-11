@@ -91,8 +91,9 @@ client.connect(err => {
     const userEmail = req.body.userEmail;
     const subject = req.body.subject;
     const mailBody = req.body.mailBody;
+    const readingStatus = 'Unread';
 
-    contactCollection.insertOne({userName, userEmail, subject, mailBody})
+    contactCollection.insertOne({userName, userEmail, subject, mailBody, readingStatus})
       .then(result => {
         res.send(result.insertedCount > 0);
       })
@@ -136,6 +137,13 @@ client.connect(err => {
     })
   })
 
+  app.get('/userQuery', (req, res) => {
+    contactCollection.find({})
+    .toArray((err, documents) => {
+      res.send(documents);
+    })
+  })
+
   app.get('/emergencyContact', (req, res) => {
     emergencyContactCollection.find({})
     .toArray((err, documents) => {
@@ -164,7 +172,7 @@ client.connect(err => {
     res.json(result);
   })
 
-  app.put('/updateComplainStatus/:id', (req, res) => {
+  app.put('/statusUpdate/:id', (req, res) => {
     const id = req.params.id;
     const filter = {_id: ObjectIdC(id)};
     const options = {upsert: true}
@@ -188,6 +196,26 @@ client.connect(err => {
         },
     };
     const result = complainCollection.updateOne(filter, updateDoc, options);
+    res.json(result);
+  })
+
+  app.put('/readingStatusUpdate/:id', (req, res) => {
+    const id = req.params.id;
+    const filter = {_id: ObjectIdC(id)};
+    const options = {upsert: true}
+    const updateDoc = {
+        $set: {
+          readingStatus: 'Read'
+        },
+    };
+    const result = contactCollection.updateOne(filter, updateDoc, options);
+    res.json(result);
+  })
+
+  app.delete('/contactDelete/:id', (req, res) => {
+    const id = req.params.id;
+    const query = {_id: ObjectIdC(id)};
+    const result = contactCollection.deleteOne(query);
     res.json(result);
   })
 
