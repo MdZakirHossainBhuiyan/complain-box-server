@@ -212,6 +212,21 @@ client.connect(err => {
     res.json(result);
   })
 
+  app.put('/staffAdminDataUpdate/:id', (req, res) => {
+    const id = req.params.id;
+    const filter = {_id: ObjectIdC(id)};
+    const options = {upsert: true}
+    const updateDoc = {
+        $set: {
+          userName: req.body.userName,
+          userPhone: req.body.userPhone,
+          userAddress: req.body.userAddress
+        },
+    };
+    const result = usersCollection.updateOne(filter, updateDoc, options);
+    res.json(result);
+  })
+
   app.delete('/contactDelete/:id', (req, res) => {
     const id = req.params.id;
     const query = {_id: ObjectIdC(id)};
