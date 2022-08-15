@@ -199,6 +199,19 @@ client.connect(err => {
     res.json(result);
   })
 
+  app.put('/updateComplainStatus/:id', (req, res) => {
+    const id = req.params.id;
+    const filter = {_id: ObjectIdC(id)};
+    const options = {upsert: true}
+    const updateDoc = {
+        $set: {
+            status: req.body.status
+        },
+    };
+    const result = complainCollection.updateOne(filter, updateDoc, options);
+    res.json(result);
+  })
+
   app.put('/readingStatusUpdate/:id', (req, res) => {
     const id = req.params.id;
     const filter = {_id: ObjectIdC(id)};
