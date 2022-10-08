@@ -13,8 +13,8 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(express.static('complainBox'));
 app.use(fileUpload());
-
 const port = process.env.PORT || 5000;
+
 
 app.get('/', (req, res) => {
   res.send('Running Our Complain Box Server...')
@@ -103,8 +103,8 @@ client.connect(err => {
     const file = req.files.file;
     const userId = req.body.userId;
     const userName = req.body.userName;
-    const userEmail = req.body.userEmail;
     const complainTitle = req.body.complainTitle;
+    const userEmail = req.body.userEmail;
     const division = req.body.division;
     const district = req.body.district;
     const thana = req.body.thana;
@@ -114,6 +114,11 @@ client.connect(err => {
     const seeComplain = req.body.seeComplain;
     const identity = req.body.identity;
     const description = req.body.description;
+    const createdTime = req.body.createdTime;
+    const day = req.body.day;
+    const weekDay = req.body.weekDay;
+    const month = req.body.month;
+    const year = req.body.year;
     const status = "pending";
     const newImg = file.data;
     const encImg = newImg.toString('base64');
@@ -124,7 +129,7 @@ client.connect(err => {
       img: Buffer.from(encImg, 'base64')
     };
 
-    complainCollection.insertOne({ userId, userName, userEmail, complainTitle, division, district, thana, union, word, village, seeComplain, identity, description, status, image})
+    complainCollection.insertOne({ userId, userName, userEmail, complainTitle, division, district, thana, union, word, village, seeComplain, identity, description, createdTime, day, weekDay, month, year, status, image})
       .then(result => {
         res.send(result.insertedCount > 0);
       })
