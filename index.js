@@ -120,6 +120,7 @@ client.connect(err => {
     const month = req.body.month;
     const year = req.body.year;
     const status = "pending";
+    const adminComments = "Have no comments";
     const newImg = file.data;
     const encImg = newImg.toString('base64');
 
@@ -129,7 +130,7 @@ client.connect(err => {
       img: Buffer.from(encImg, 'base64')
     };
 
-    complainCollection.insertOne({ userId, userName, userEmail, complainTitle, division, district, thana, union, word, village, seeComplain, identity, description, createdTime, day, weekDay, month, year, status, image})
+    complainCollection.insertOne({ userId, userName, userEmail, complainTitle, division, district, thana, union, word, village, seeComplain, identity, description, createdTime, day, weekDay, month, year, status, adminComments, image})
       .then(result => {
         res.send(result.insertedCount > 0);
       })
@@ -197,7 +198,8 @@ client.connect(err => {
     const updateDoc = {
         $set: {
             status: 'Accepted',
-            seeComplain: req.body.status
+            seeComplain: req.body.seeComplain,
+            adminComments: req.body.adminComments,
         },
     };
     const result = complainCollection.updateOne(filter, updateDoc, options);
